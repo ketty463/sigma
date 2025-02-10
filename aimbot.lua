@@ -86,21 +86,17 @@ local function TriggerBot()
 end
 
 local function GetClosestPlayer()
-    -- Check if the current target is still valid
     if Environment.Locked and Environment.Locked.Character and Environment.Locked.Character:FindFirstChild(Environment.Settings.LockPart) then
         local LockedPos = ConvertVector(Camera:WorldToViewportPoint(Environment.Locked.Character[Environment.Settings.LockPart].Position))
         local LockedDistance = (UserInputService:GetMouseLocation() - LockedPos).Magnitude
 
         if LockedDistance <= (Environment.FOVSettings.Enabled and Environment.FOVSettings.Amount or 2000) then
-            -- Continue locking onto the current target if still valid
             return
         else
-            -- Reset the lock if the target is out of range or invalid
             CancelLock()
         end
     end
 
-    -- Search for a new valid target
     RequiredDistance = (Environment.FOVSettings.Enabled and Environment.FOVSettings.Amount or 2000)
     for _, v in next, Players:GetPlayers() do
         if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild(Environment.Settings.LockPart) and v.Character:FindFirstChildOfClass("Humanoid") then
@@ -138,7 +134,7 @@ local function Load()
 
         if Running and Environment.Settings.Enabled then
             GetClosestPlayer()
-            TriggerBot()
+            TriggerBot() -- TriggerBot logic here
 
             if Environment.Locked then
                 if Environment.Settings.ThirdPerson then
@@ -163,9 +159,9 @@ local function Load()
     ServiceConnections.InputBeganConnection = UserInputService.InputBegan:Connect(function(Input)
         if not Typing then
             pcall(function()
-                if Input.KeyCode == Environment.TriggerBotSettings.TriggerKey then
+                if Input.KeyCode == Enum.KeyCode[stringupper(Environment.TriggerBotSettings.TriggerKey)] then
                     Environment.TriggerBotSettings.Enabled = not Environment.TriggerBotSettings.Enabled
-                elseif Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode == Enum.KeyCode[#Environment.Settings.TriggerKey == 1 and stringupper(Environment.Settings.TriggerKey) or Environment.Settings.TriggerKey] or Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
+                elseif Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode == Enum.KeyCode[stringupper(Environment.Settings.TriggerKey)] or Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
                     if Environment.Settings.Toggle then
                         Running = not Running
 
@@ -184,7 +180,7 @@ local function Load()
         if not Typing then
             if not Environment.Settings.Toggle then
                 pcall(function()
-                    if Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode == Enum.KeyCode[#Environment.Settings.TriggerKey == 1 and stringupper(Environment.Settings.TriggerKey) or Environment.Settings.TriggerKey] or Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
+                    if Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode == Enum.KeyCode[stringupper(Environment.Settings.TriggerKey)] or Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
                         Running = false; CancelLock()
                     end
                 end)

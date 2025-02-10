@@ -8,7 +8,6 @@ if not getgenv().Captive or getgenv().Captive.Aimbot then return end
 --// Services
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
@@ -32,6 +31,12 @@ getgenv().Captive.Aimbot = {
         LockPart = "Head" -- Body part to lock on
     },
 
+    TriggerBotSettings = {
+        Enabled = false, -- Trigger Bot toggle
+        TriggerKey = Enum.KeyCode.LeftAlt, -- Key to toggle the Trigger Bot
+        ActivationRadius = 5 -- Radius in pixels around the crosshair to activate
+    },
+
     FOVSettings = {
         Enabled = true,
         Visible = true,
@@ -42,12 +47,6 @@ getgenv().Captive.Aimbot = {
         Sides = 60,
         Thickness = 1,
         Filled = false
-    },
-
-    TriggerBotSettings = {
-        Enabled = false,
-        TriggerKey = Enum.KeyCode.LeftAlt, -- Key to toggle the Trigger Bot
-        ActivationRadius = 5 -- Radius in pixels around the crosshair to activate
     },
 
     FOVCircle = Drawingnew("Circle")

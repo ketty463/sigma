@@ -32,8 +32,8 @@ getgenv().Captive.Aimbot = {
     },
 
     TriggerBotSettings = {
-        Enabled = false, -- Trigger Bot toggle
-        TriggerKey = Enum.KeyCode.LeftAlt, -- Key to toggle the Trigger Bot
+        Enabled = false, 
+        TriggerKey = "LeftAlt",
         ActivationRadius = 5 -- Radius in pixels around the crosshair to activate
     },
 
@@ -254,7 +254,7 @@ function Environment.Functions:ResetSettings()
 
     Environment.TriggerBotSettings = {
         Enabled = false,
-        TriggerKey = Enum.KeyCode.LeftAlt,
+        TriggerKey = "LeftAlt",
         ActivationRadius = 5
     }
 end

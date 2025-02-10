@@ -12,9 +12,12 @@ local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
 --// Variables
 local RequiredDistance, Typing, Running, ServiceConnections, Animation, OriginalSensitivity = 2000, false, false, {}
+local TriggerBotEnabled = false
+local TriggerKey = Enum.KeyCode.LeftAlt -- Toggle key for the trigger bot
 
 --// Environment
 getgenv().Captive.Aimbot = {
@@ -63,6 +66,22 @@ local function CancelLock()
     end
 end
 
+local function TriggerBot()
+    if TriggerBotEnabled and Environment.Locked and Environment.Locked.Character then
+        local LockPart = Environment.Locked.Character:FindFirstChild(Environment.Settings.LockPart)
+        if LockPart then
+            local ScreenPos, OnScreen = Camera:WorldToViewportPoint(LockPart.Position)
+            local MousePos = UserInputService:GetMouseLocation()
+
+            if OnScreen and (MousePos - Vector2new(ScreenPos.X, ScreenPos.Y)).Magnitude <= 5 then
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0) -- Press left click
+                wait(0.01)
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0) -- Release left click
+            end
+        end
+    end
+end
+
 local function GetClosestPlayer()
     -- Check if the current target is still valid
     if Environment.Locked and Environment.Locked.Character and Environment.Locked.Character:FindFirstChild(Environment.Settings.LockPart) then
@@ -86,8 +105,8 @@ local function GetClosestPlayer()
             if Environment.Settings.AliveCheck and v.Character:FindFirstChildOfClass("Humanoid").Health <= 0 then continue end
             if Environment.Settings.WallCheck and #(Camera:GetPartsObscuringTarget({v.Character[Environment.Settings.LockPart].Position}, v.Character:GetDescendants())) > 0 then continue end
 
-            local Vector, OnScreen = Camera:WorldToViewportPoint(v.Character[Environment.Settings.LockPart].Position); Vector = ConvertVector(Vector)
-            local Distance = (UserInputService:GetMouseLocation() - Vector).Magnitude
+            local Vector, OnScreen = Camera:WorldToViewportPoint(v.Character[Environment.Settings.LockPart].Position)
+            local Distance = (UserInputService:GetMouseLocation() - ConvertVector(Vector)).Magnitude
 
             if Distance < RequiredDistance and OnScreen then
                 RequiredDistance = Distance
@@ -116,11 +135,11 @@ local function Load()
 
         if Running and Environment.Settings.Enabled then
             GetClosestPlayer()
+            TriggerBot()
 
             if Environment.Locked then
                 if Environment.Settings.ThirdPerson then
                     local Vector = Camera:WorldToViewportPoint(Environment.Locked.Character[Environment.Settings.LockPart].Position)
-
                     mousemoverel((Vector.X - UserInputService:GetMouseLocation().X) * Environment.Settings.ThirdPersonSensitivity, (Vector.Y - UserInputService:GetMouseLocation().Y) * Environment.Settings.ThirdPersonSensitivity)
                 else
                     if Environment.Settings.Sensitivity > 0 then
@@ -141,7 +160,9 @@ local function Load()
     ServiceConnections.InputBeganConnection = UserInputService.InputBegan:Connect(function(Input)
         if not Typing then
             pcall(function()
-                if Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode == Enum.KeyCode[#Environment.Settings.TriggerKey == 1 and stringupper(Environment.Settings.TriggerKey) or Environment.Settings.TriggerKey] or Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
+                if Input.KeyCode == TriggerKey then
+                    TriggerBotEnabled = not TriggerBotEnabled
+                elseif Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode == Enum.KeyCode[#Environment.Settings.TriggerKey == 1 and stringupper(Environment.Settings.TriggerKey) or Environment.Settings.TriggerKey] or Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
                     if Environment.Settings.Toggle then
                         Running = not Running
 

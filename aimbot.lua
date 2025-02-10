@@ -1,11 +1,3 @@
---[[
-
-	Aimbot Module [Captive] by Exunys © CC0 1.0 Universal (2023)
-
-	https://github.com/Exunys
-
-]]
-
 --// Cache
 
 local pcall, getgenv, next, setmetatable, Vector2new, CFramenew, Color3fromRGB, Drawingnew, TweenInfonew, stringupper, mousemoverel = pcall, getgenv, next, setmetatable, Vector2.new, CFrame.new, Color3.fromRGB, Drawing.new, TweenInfo.new, string.upper, mousemoverel or (Input and Input.MouseMove)

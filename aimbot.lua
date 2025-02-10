@@ -16,8 +16,6 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 
 --// Variables
 local RequiredDistance, Typing, Running, ServiceConnections, Animation, OriginalSensitivity = 2000, false, false, {}
-local TriggerBotEnabled = false
-local TriggerKey = Enum.KeyCode.LeftAlt -- Toggle key for the trigger bot
 
 --// Environment
 getgenv().Captive.Aimbot = {
@@ -46,6 +44,12 @@ getgenv().Captive.Aimbot = {
         Filled = false
     },
 
+    TriggerBotSettings = {
+        Enabled = false,
+        TriggerKey = Enum.KeyCode.LeftAlt, -- Key to toggle the Trigger Bot
+        ActivationRadius = 5 -- Radius in pixels around the crosshair to activate
+    },
+
     FOVCircle = Drawingnew("Circle")
 }
 
@@ -67,13 +71,13 @@ local function CancelLock()
 end
 
 local function TriggerBot()
-    if TriggerBotEnabled and Environment.Locked and Environment.Locked.Character then
+    if Environment.TriggerBotSettings.Enabled and Environment.Locked and Environment.Locked.Character then
         local LockPart = Environment.Locked.Character:FindFirstChild(Environment.Settings.LockPart)
         if LockPart then
             local ScreenPos, OnScreen = Camera:WorldToViewportPoint(LockPart.Position)
             local MousePos = UserInputService:GetMouseLocation()
 
-            if OnScreen and (MousePos - Vector2new(ScreenPos.X, ScreenPos.Y)).Magnitude <= 5 then
+            if OnScreen and (MousePos - Vector2new(ScreenPos.X, ScreenPos.Y)).Magnitude <= Environment.TriggerBotSettings.ActivationRadius then
                 VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0) -- Press left click
                 wait(0.01)
                 VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0) -- Release left click
@@ -160,8 +164,8 @@ local function Load()
     ServiceConnections.InputBeganConnection = UserInputService.InputBegan:Connect(function(Input)
         if not Typing then
             pcall(function()
-                if Input.KeyCode == TriggerKey then
-                    TriggerBotEnabled = not TriggerBotEnabled
+                if Input.KeyCode == Environment.TriggerBotSettings.TriggerKey then
+                    Environment.TriggerBotSettings.Enabled = not Environment.TriggerBotSettings.Enabled
                 elseif Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode == Enum.KeyCode[#Environment.Settings.TriggerKey == 1 and stringupper(Environment.Settings.TriggerKey) or Environment.Settings.TriggerKey] or Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
                     if Environment.Settings.Toggle then
                         Running = not Running
@@ -247,6 +251,12 @@ function Environment.Functions:ResetSettings()
         Sides = 60,
         Thickness = 1,
         Filled = false
+    }
+
+    Environment.TriggerBotSettings = {
+        Enabled = false,
+        TriggerKey = Enum.KeyCode.LeftAlt,
+        ActivationRadius = 5
     }
 end
 
